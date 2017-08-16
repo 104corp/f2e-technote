@@ -4,6 +4,13 @@
 
 ---
 
+Object Literal (Object.prototype)
+function(){ (Function.prototype -> Object.prototype)}
+兩個隱藏的property: context, source code
+prototype property
+
+
+
 ### Default Parameters
 
 1. 傳統作法: 在function一開始檢查參數是否有undefined

@@ -65,7 +65,7 @@ isNaN(NaN)            // true, 使用isNaN()判斷
 ## String
 文字型別只有String一種，為unicode sequence，沒有字元(character)的型別。
 預設編碼為UTF-16，代表每個字元使用16-bit unsigned integer表示。
-```javascript=
+```javascript
 // string literal
 var singal = 'text';      // 單引號, string primitive
 var double = "text";      // 雙引號, string primitive
