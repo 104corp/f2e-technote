@@ -149,6 +149,19 @@ var num = str - 0;  // 10, 不能使用+, 會被誤認為是字串連接運算�
 var str = '10';
 var num = + str;  // 10
 ```
+>要注意字串跟數字的轉換存在相當多地雷（也很難全部記住），因此盡量在撰寫程式的時候避開型態轉換的可能
+
+```javascript
+// parsing:
+parseInt("20px");       // 20
+parseInt("10100", 2);   // 20
+parseInt("2e1");        // 2
+
+// type conversion
+Number("20px");       // NaN
+Number("2e1");        // 20, exponential notation
+```
+
 * [parseInt - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseInt)
 * [parseFloat - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/parseFloat)
 
@@ -177,7 +190,8 @@ Buffer.from("ffad", "hex").toString("base64");  // 'ffad' -> '/60='
 
 ```javascript
 // 將變數轉成boolean並且NOT, 用以檢查不合法值
-if(!x){ /* x = null會滿足這條件 */ }    
+if(!x){ /* x = null會滿足這條件 */ }   
+// 常使用做例外判斷，不過還是必須清楚自己接受到的資料型態有哪些可能 
 
 // 將變數轉成boolean
 if(!!x){ /* x = []會滿足這條件 */ }
@@ -200,7 +214,7 @@ var obj = { prop: null };
 ```
 
 ### Undefined
-代表「值不存在」，出現在以下狀況
+代表「沒有被賦值（initialize）」，出現在以下狀況
 
 ```javascript
 // 宣告變數卻未指定值
@@ -221,6 +235,20 @@ console.log(test());
 
 * Undefined 和 Null 的差異，請參考[這篇說明](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/null#Difference_between_null_and_undefined)。
 * Array、Function、Object將留到後面章節一併解說。
+
+```javascript
+
+typeof null          // "object" (not "null" for legacy reasons)
+typeof undefined     // "undefined"
+null === undefined   // false
+null  == undefined   // true
+null === null        // true
+null == null         // true
+!null                // true
+isNaN(1 + null)      // false
+isNaN(1 + undefined) // true
+
+```
 
 ---
 
