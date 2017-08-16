@@ -4,7 +4,7 @@ JS是動態（Dynamically-typed）語言
 
 ## var
 
-```javascript=
+```javascript
 var num = 1;
 var string = 'hello';
 var object = { string: 'hello', num: 12, object: {}, array: []};
@@ -18,14 +18,14 @@ var sth;
 
 不給 var => window(browser)、this(node)
 
-```javascript=
+```javascript
 'use strict';
 
 a = '123';
 //error
 ```
 
-```javascript=
+```javascript
 var a = 'hello';
 a = 20;
 
@@ -71,7 +71,7 @@ https://pic1.zhimg.com/9fe1bfa72176d5167915357bb940d474_r.png![](https://i.imgur
 ## scope & hoisting
 
 **scope**
-```javascript=
+```javascript
 
 var global = '123';
 // global scope
@@ -87,7 +87,7 @@ var func = function() {
 
 
 
-```javascript=
+```javascript
 
 catName("Chloe");
 
@@ -109,7 +109,7 @@ let 可變
 
 沒有hoisting
 
-```javascript=
+```javascript
 
 console.log(a);
 const a = 1;

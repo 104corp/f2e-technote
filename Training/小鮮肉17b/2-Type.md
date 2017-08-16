@@ -8,7 +8,7 @@ JS的資料型態有以下特性
 ## 原始型別 Primitive Type
 截至ES6為止，一共有6種Primitive Type + 1種強大的Object
 
-```javascript=
+```javascript
 true, false                 // Boolean
 null                        // Null
 undefined                   // Undefined
@@ -31,7 +31,7 @@ Symbol("text")              // Symbol, new in ES6
 ## Number
 不區分Integer、Float、Double，數值型別只有Number一種：64位元雙精度浮點數(IEEE 754)
 
-```javascript=
+```javascript
 var decimal = 10;       // 10, 十進位(Decimal)
 var binary = 0b0011;    // 3, 二進位(Binary), 0b
 var octal = 0o64;       // 52, 八進位(Octal), 0o
@@ -49,7 +49,7 @@ var hexadecimal = 0x64  // 100, 十六進位(Hexadecimal), 0x
 
 
 ### 特殊數值
-```javascript=
+```javascript
 // Infinity
 1/0 == Infinity       // 正無窮大
 -1/0 == -Infinity     // 負無窮大
@@ -85,7 +85,7 @@ var Construc = new String("text"); // with new, string object
 
 
 ### 連接字串、嵌入變數
-```javascript=
+```javascript
 // concatenation operator (+)
 var str = "yang";
 console.log("Hello "+str+"!");         // Hello yang!
@@ -107,7 +107,7 @@ console.log(`Hello ${str}!`);          // Hello yang!
 
 ## String 與 Number 的轉換
 ### Number 轉成 String
-```javascript=
+```javascript
 // String()
 var str = String(10);  // '10', no new
 
@@ -121,7 +121,7 @@ var str = num + "";  // '10'
 ```
 
 ### String 轉成 Number
-```javascript=
+```javascript
 // Number()
 var str = '10';
 var num = Number(str);  // 10, no new
@@ -157,7 +157,7 @@ var num = + str;  // 10
 直接在不同編碼的字串中轉換相當麻煩，而且容易出錯。
 一般建議先將string轉成binary data，再對其轉換會比較安全。
 
-```javascript=
+```javascript
 // hex to base64
 // 先用Buffer.from()變成binary data，再toString()轉成指定編碼。
 Buffer.from("ffad", "hex").toString("base64");  // 'ffad' -> '/60='
@@ -175,7 +175,7 @@ Buffer.from("ffad", "hex").toString("base64");  // 'ffad' -> '/60='
 轉換後為true: 除了上述以外都是，包含 []、{}、'false'、Infinity...
 ```
 
-```javascript=
+```javascript
 // 將變數轉成boolean並且NOT, 用以檢查不合法值
 if(!x){ /* x = null會滿足這條件 */ }    
 
@@ -195,14 +195,14 @@ var num = x && f(x);  // 如果x的值合法或不為0, 就回傳f(x)的值
 ### Null
 代表「應該有值但卻是空的」
 
-```javascript=
+```javascript
 var obj = { prop: null };
 ```
 
 ### Undefined
 代表「值不存在」，出現在以下狀況
 
-```javascript=
+```javascript
 // 宣告變數卻未指定值
 var variable;  
 
