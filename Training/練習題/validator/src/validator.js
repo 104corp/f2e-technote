@@ -15,6 +15,9 @@ const supportOptions = {
     string:{
         encoding: ['utf8', 'base64', 'base64Url', 'hex'],
     },
+    id: {
+        type: ['mongodb', 'uuid']
+    }
 }
 
 function Validator(){
