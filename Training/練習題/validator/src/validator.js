@@ -10,80 +10,48 @@ const supportOptions = {
             number: '0-9',
             symbol: '!%@#',
         },
-        confusedCharacters: [
-            new Set(['0', 'o', 'O']),
-            new Set(['1', 'l', 'I', 'i']),
-            new Set(['$', 'S', 's']),
-        ]
+        confusedCharsRegexp: /0oO1lIi/,
     },
     string:{
         encoding: ['utf8', 'base64', 'base64Url', 'hex'],
     },
-    id:{
-        types: ['mongodb', 'uuid'],
-    },
-    custom: {}
+}
+
+function Validator(){
+    this.name = "";
+    this.msg = "";
 }
 
 /**
  * validate function for server-side use
- * @param {string, object, array} input  
- * @param {object}                option
- * @param {object}                schema - optional
+ * @param {string, object} input  
+ * @param {object}         option
  */
-function validate(input, option, schema = null){
-    let Validator = new Validator(option.name);
-
+Validator.prototype.validate = function (input, option) {
     // check parameter available
-    if(!Validator.checkParameters(input, option, schema)){
+    if(!Validator.__checkParameters(input, option)){
         return { status: false, msg: Validator.msg };
     };
 
     // auto get correspond name validator to process
-    return Validator.process(input, option, schema);
+    return Validator.__process(input, option);
 }
 
-/**
- * use selector validate html form for client-side use
- * @param {string} selector
- * @param {object} formOptions
- */
-function validateForm(selector, formOptions){
-    
-}
+/* ======== for private functions ======== */
 
-module.exports = {
-    validate,
-    valideteForm,
-}
-
-
-
-
-
-
-
-
-function Validator(name){
-    this.name = name;
-    this.msg = "";
-}
-
-Validator.prototype.checkParameters = function (input, option, schema) {
+Validator.prototype.__checkParameters = function (input, option) {
     if(!input|| !Object.keys(input).length){
         this.msg = 'input is empty';
         return false;
     }else if(!option || !option.name){
-        this.msg = 'option name is empty';
-        return false;
-    }else if(option.name === 'custom' && !Object.keys(schema).length){
-        this.msg = 'when customize validator,  schema is required';
+        this.msg = 'option name is empty';    
         return false;
     }
+    this.name = option.name;
     return true;
 }
 
-Validator.prototype.process = function(input, option, schema){
+Validator.prototype.__process = function(input, option, schema){
     let name = this.name;
 
     // not in supported list
@@ -97,11 +65,11 @@ Validator.prototype.process = function(input, option, schema){
         return { status: false, msg: this.msg }
     }
 
-    return (name === 'custom') ? this['_'+name](option, schema) : this['_'+name](option);
+    return (name === 'custom') ? this['__'+name](option, schema) : this['__'+name](option);
 }
 
 
-Validator.prototype._email = function (input, option) {
+Validator.prototype.__email = function (input, option) {
     let regexp = supportOptions.email.regexp;
 
     // string -> reg test, array -> map reg test
@@ -115,7 +83,7 @@ Validator.prototype._email = function (input, option) {
     return { status: false, msg: 'invalid data type of input'};
 }
 
-Validator.prototype._password = function (input, option) {
+Validator.prototype.__password = function (input, option) {
     let regexp;
     let regexpStr;
 
@@ -128,34 +96,35 @@ Validator.prototype._password = function (input, option) {
 
     // string -> reg test, array -> map reg test
     // NOT ALLOW object
-    if(typeof input === 'string'){
-        return (regexp.test(input)) ? { status: true } : { status: false, msg: 'invalid password format'};
+    if(typeof input === 'string'){ 
+        if(!regexp.test(input)){
+            return { status: false, msg: 'invalid password format' };
+        }
+        // if avoidConfusedChars is true
+        if(option.avoidConfusedChars && supportOptions.password.confusedCharsRegexp.test(input)){
+            return { status: false, msg: 'contain confused characters in password' };
+        }
+        return { status: true };
     }
     if(input instanceof Array){
-        return input.map((pass) => (regexp.test(pass)) ? { status: true } : { status: false, msg: 'invalid password format'});
+        return input.map((pass) => {
+            if(!regexp.test(pass)){
+                return { status: false, msg: 'invalid password format' };
+            }
+            // if avoidConfusedChars is true
+            if(option.avoidConfusedChars && supportOptions.password.confusedCharsRegexp.test(pass)){
+                return { status: false, msg: 'contain confused characters in password' };
+            }
+            return { status: true };
+        });
     }
     return { status: false, msg: 'invalid data type of input'};
 }
 
-Validator.prototype._string = function (input, option) {
+Validator.prototype.__string = function (input, option) {
     
 }
 
-Validator.prototype._id = function (input, option) {
-    
-}
-
-
-
-
-
-
-
-
-Validator.prototype._custom = function (input, option, schema) {
-    
-}
-
-Validator.prototype._validateForm = function () {
+Validator.prototype.__id = function (input, option) {
     
 }
