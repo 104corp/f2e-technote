@@ -1,9 +1,15 @@
 const supportOptions = {
     email: {
-        regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        regexp: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
     },
     password: {
-        accept: ['uppercase', 'lowercase', 'number', 'symbol'],
+        acceptDefault: ['uppercase', 'lowercase', 'number', 'symbol'],
+        accept: {
+            uppercase: 'A-Z',
+            lowercase: 'a-z',
+            number: '0-9',
+            symbol: '!%@#',
+        },
         confusedCharacters: [
             new Set(['0', 'o', 'O']),
             new Set(['1', 'l', 'I', 'i']),
@@ -26,16 +32,15 @@ const supportOptions = {
  * @param {object}                schema - optional
  */
 function validate(input, option, schema = null){
-    // check input and option
-    if(!input|| !Object.keys(input).length){
-        return { status: false, msg: 'input is empty'};
-    }
-    if(!option.name){
-        return { status: false, msg: 'option name is empty'};
-    }
+    let Validator = new Validator(option.name);
+
+    // check parameter available
+    if(!Validator.checkParameters(input, option, schema)){
+        return { status: false, msg: Validator.msg };
+    };
 
     // auto get correspond name validator to process
-    return new Validator(option.name).process(input, option, schema);
+    return Validator.process(input, option, schema);
 }
 
 /**
@@ -61,41 +66,96 @@ module.exports = {
 
 function Validator(name){
     this.name = name;
-    this.process = function (option, schema) {
-        let name = this.name;
-        // not in supported list
-        if(!supportOptions(name)){
-            return { status: false, msg: 'this name of validator is not supported'};
-        }
-        // not find correspond method
-        if(!this.hasOwnProperty(name)){
-            return { status: false, msg: 'cannot find correspond validate method'};
-        }
-        return (name === 'custom') ? this['_'+name](option, schema) : this['_'+name](option);
-    };
+    this.msg = "";
 }
 
+Validator.prototype.checkParameters = function (input, option, schema) {
+    if(!input|| !Object.keys(input).length){
+        this.msg = 'input is empty';
+        return false;
+    }else if(!option || !option.name){
+        this.msg = 'option name is empty';
+        return false;
+    }else if(option.name === 'custom' && !Object.keys(schema).length){
+        this.msg = 'when customize validator,  schema is required';
+        return false;
+    }
+    return true;
+}
+
+Validator.prototype.process = function(input, option, schema){
+    let name = this.name;
+
+    // not in supported list
+    if(!supportOptions[name]){
+        this.msg = 'this name of validator is not supported';
+        return { status: false, msg: this.msg }
+
+    // not find correspond method
+    }else if(!this.hasOwnProperty(name)){
+        this.msg = 'cannot find correspond validate method';
+        return { status: false, msg: this.msg }
+    }
+
+    return (name === 'custom') ? this['_'+name](option, schema) : this['_'+name](option);
+}
+
+
 Validator.prototype._email = function (input, option) {
+    let regexp = supportOptions.email.regexp;
 
-
+    // string -> reg test, array -> map reg test
+    // NOT ALLOW object
+    if(typeof input === 'string'){
+        return (regexp.test(input)) ? { status: true } : { status: false, msg: 'invalid email format'};
+    }
+    if(input instanceof Array){
+        return input.map((email) => (regexp.test(email)) ? { status: true } : { status: false, msg: 'invalid email format'});
+    }
+    return { status: false, msg: 'invalid data type of input'};
 }
 
 Validator.prototype._password = function (input, option) {
-    
+    let regexp;
+    let regexpStr;
+
+    // generate regexp from options, default is all allow
+    if(!option.accept){
+        option.accept = supportOptions.password.acceptDefault;
+    }
+    regexpStr = option.accept.map((type) => accept.type || '').join('');
+    regexp = new RegExp(regexpStr);
+
+    // string -> reg test, array -> map reg test
+    // NOT ALLOW object
+    if(typeof input === 'string'){
+        return (regexp.test(input)) ? { status: true } : { status: false, msg: 'invalid password format'};
+    }
+    if(input instanceof Array){
+        return input.map((pass) => (regexp.test(pass)) ? { status: true } : { status: false, msg: 'invalid password format'});
+    }
+    return { status: false, msg: 'invalid data type of input'};
 }
 
 Validator.prototype._string = function (input, option) {
     
 }
 
-Validator.prototype.id = function (input, option) {
+Validator.prototype._id = function (input, option) {
     
 }
 
-Validator.prototype.custom = function (input, option, schema) {
+
+
+
+
+
+
+
+Validator.prototype._custom = function (input, option, schema) {
     
 }
 
-Validator.prototype.validateForm = function () {
+Validator.prototype._validateForm = function () {
     
 }
