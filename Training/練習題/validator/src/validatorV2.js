@@ -61,8 +61,8 @@ Validator.prototype.validate = function (input, option) {
  * <private> check parameters are available, and return their types
  */
 Validator.prototype.__checkParameters = function () {
-    let inputType = (typeof this.input).substr(0, 1);
-    let optionType = (typeof this.option).substr(0, 1);
+    let inputType = (typeof this.input).substr(0, 1);    //FIXME: maybe error
+    let optionType = (typeof this.option).substr(0, 1);  //FIXME: maybe error
 
     if( (inputType === 's' && !this.input) || 
         (inputType === 'o' && !Object.keys(this.input).length) ||

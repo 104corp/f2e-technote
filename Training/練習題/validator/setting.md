@@ -117,23 +117,11 @@ const supportOptions = {
 
 ## Private Method
 
-### __checkParameters(input, option)
-```javascript
-/**
- * @param {string, object} input  
- * @param {object}         option
- */
-```
+### __checkParameters()
 * 檢查輸入參數的型態
 
 
-### __process(input, option)
-```javascript
-/**
- * @param {string, object} input  
- * @param {object}         option
- */
-```
+### __process()
 * 根據input的property，自動判斷要取用哪支validator
 * 檢查是否支援某個validator時，會依序做以下檢查：
     1. 檢查 supportOptions 是否有此 property
