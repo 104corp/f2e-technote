@@ -28,7 +28,6 @@ const supportOptions = {
             number: '0-9',
             symbol: '!%@#',
         },
-        
     },
     _id: {
         hexRegexp: /[a-fA-F\d]+\b/,
@@ -37,8 +36,9 @@ const supportOptions = {
 }
 
 function Validator(){
-    this.name = "";
-    this.msg = "";
+    this.input;
+    this.option;
+    this.paramsTypes;  // [string, object] = 'so', ss', 'so', 'os', 'oo'....
 }
 
 /**
@@ -47,93 +47,77 @@ function Validator(){
  * @param {object}         option
  */
 Validator.prototype.validate = function (input, option) {
-    // check parameter available
-    if(!this.__checkParameters(input, option)){
-        return { status: false, msg: Validator.msg };
-    };
+    this.input = input;
+    this.option = option;
 
-    // auto get correspond name validator to process
-    return this.__process(input, option);
+    if(!this.__checkParameters()){
+        return { status: false, msg: 'input or option is empty' };
+    };
+    
+    return this.__process();
 }
 
 /**
- * <private> check parameters are available
- * @param {string, object} input  
- * @param {object}         option
+ * <private> check parameters are available, and return their types
  */
-Validator.prototype.__checkParameters = function (input, option) {
-    // for input
-    if(!input){
-        this.msg = 'input string is empty';
-        return false;
-    }
-    if(typeof input === 'object' && !Object.keys(input).length){
-        this.msg = 'input object is empty';
+Validator.prototype.__checkParameters = function () {
+    let inputType = (typeof this.input).substr(0, 1);
+    let optionType = (typeof this.option).substr(0, 1);
+
+    if( (inputType === 's' && !this.input) || 
+        (inputType === 'o' && !Object.keys(this.input).length) ||
+        (optionType === 'o' && !Object.keys(this.option).length)
+    ){
         return false;
     }
 
-    // for option
-    if(!option){
-        this.msg = 'option string is empty';
-        return false;
-    }
-    if(typeof option === 'object' && !Object.keys(option).length){
-        this.msg = 'option object is empty';
-        return false;
-    }
+    // detect params types 'ss', 'so', 'os', 'oo', ......
+    this.paramsTypes = inputType + optionType;
     return true;
 }
 
 /**
  * <private> auto use correspond validator (contain custom and default)
- * @param {string, object} input  
- * @param {object}         option
  */
-Validator.prototype.__process = function(input, option){
-    // Validator.validate("test", "username")
-    // Validator.validate("test", {....})
-    if(
-        (typeof input === 'string' && typeof option === 'string') ||
-        (typeof input === 'string' && typeof option === 'object')
-    ){
-        let name = option.name || option;
-        // not in supported list
-        if(!supportOptions[name]){
-            this.msg = 'this name of validator is not supported';
-            return { status: false, msg: this.msg }
+Validator.prototype.__process = function(){
 
-        // not find correspond method
-        }else if(!(("__"+name) in this)){
-            this.msg = 'cannot find correspond validate method';
-            return { status: false, msg: this.msg }
-        }
-        // call correspond private method
-        return this['__'+name](input, option);
-    }
-
-    // Validator.validate({ ... }, { .... }), input prop name need equal to option prop name
-    if(typeof input === 'object' && typeof option === 'object'){
-        let msgStack = [];
-        for(let name in input){
-            // not in supported list or not find correspond method
-            if(!supportOptions[name] || !this.hasOwnProperty(name)){
-                // no customized validator in options, error
-                if(!option[name]){
-                    msgStack.push({ status: false, msg: 'unsupported validator, and customied validator not found in option' });
-                    continue;
-                }
-                // call customized validator
-                msgStack.push(this.__customize(input[name], option[name]));
-            }else{
-                // customized setting can overwrite default setting
-                msgStack.push(this['__'+name](input[name], option[name]));
+    switch(this.paramsTypes){
+        case 'ss':  // validate("test", "username")
+        case 'so':  // validate("test", {....})
+            let name = this.option.name || this.option;
+            // not in supported list
+            if(!supportOptions[name]){
+                return { status: false, msg: 'this name of validator is not supported' }
             }
-        }
-    }
+            // not find correspond method
+            if(!(("__"+name) in this)){
+                return { status: false, msg: 'cannot find correspond validate method' }
+            }
+            // call correspond private method
+            return this['__'+name](input, option);
 
-    // Validator.validate("..", { .... }) and Validator.validate({ ... }, "...") are invalid
-    this.msg = 'error usage due to invalid input or option data type';
-    return { status: false, msg: this.msg }
+        case 'oo':  // validate({ ... }, { .... })
+            let msgStack = [];
+            for(let name in input){
+                // not in supported list or not find correspond method
+                if(!supportOptions[name] || !this.hasOwnProperty(name)){
+                    // no customized validator in options, error
+                    if(!this.option[name]){
+                        msgStack.push({ status: false, msg: 'unsupported validator, and customized validator not found in option' });
+                        continue;
+                    }
+                    // call customized validator
+                    msgStack.push(this.__customize(this.input[name], this.option[name]));
+                }else{
+                    // customized setting can overwrite default setting
+                    msgStack.push(this['__'+name](this.input[name], this.option[name]));
+                }
+            }
+            return msgStack;
+
+        default: 
+            return { status: false, msg: 'error usage due to invalid input or option data type' }
+    }
 }
 
 /**
@@ -168,8 +152,8 @@ Validator.prototype.__password = function (str, customized = {}) {
     }
     
     // generate regexp from options, default is all allow
-    regexpStr = setting.acceptTypes.map((type) => accept[type] || '').join('');
-    regexp = new RegExp(regexpStr);
+    regexpStr = setting.acceptTypes.map((type) => supportOptions.password.types[type] || '').join('');
+    regexp = new RegExp(`[${regexpStr}]{${setting.minLength},${setting.maxLength}}`);
 
     if(str.length < setting.minLength){
         return { name: 'password', status: false, msg: `password too short, at least ${setting.minLength} characters` };
@@ -181,11 +165,11 @@ Validator.prototype.__password = function (str, customized = {}) {
         return { name: 'password', status: false, msg: 'invalid password format' };
     }
     // if avoidConfusedChars is true
-    if(option.avoidConfusedChars && supportOptions.password.confusedCharsRegexp.test(input)){
+    if(setting.avoidConfusedChars && supportOptions.password.confusedCharsRegexp.test(input)){
         return { name: 'password', status: false, msg: 'contain confused characters in password' };
     }
     // if atLeastOneUppercase is true
-    if(option.atLeastOneUppercase && !supportOptions.password.oneUppercaseRegexp.test(input)){
+    if(setting.atLeastOneUppercase && !supportOptions.password.oneUppercaseRegexp.test(input)){
         return { name: 'password', status: false, msg: 'at least contain one uppercase characters in password' };
     }
 
