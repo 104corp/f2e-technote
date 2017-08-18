@@ -48,12 +48,12 @@ function Validator(){
  */
 Validator.prototype.validate = function (input, option) {
     // check parameter available
-    if(!Validator.__checkParameters(input, option)){
+    if(!this.__checkParameters(input, option)){
         return { status: false, msg: Validator.msg };
     };
 
     // auto get correspond name validator to process
-    return Validator.__process(input, option);
+    return this.__process(input, option);
 }
 
 /**
@@ -91,15 +91,19 @@ Validator.prototype.__checkParameters = function (input, option) {
  */
 Validator.prototype.__process = function(input, option){
     // Validator.validate("test", "username")
-    if(typeof input === 'string' && typeof option === 'string'){
-        let name = option;
+    // Validator.validate("test", {....})
+    if(
+        (typeof input === 'string' && typeof option === 'string') ||
+        (typeof input === 'string' && typeof option === 'object')
+    ){
+        let name = option.name || option;
         // not in supported list
         if(!supportOptions[name]){
             this.msg = 'this name of validator is not supported';
             return { status: false, msg: this.msg }
 
         // not find correspond method
-        }else if(!this.hasOwnProperty(name)){
+        }else if(!(("__"+name) in this)){
             this.msg = 'cannot find correspond validate method';
             return { status: false, msg: this.msg }
         }
@@ -146,7 +150,7 @@ Validator.prototype.__email = function (str, customized = {}) {
     if(str.length > setting.maxLength){
         return { name: 'email', status: false, msg: 'email exceed maximum length'};
     }
-    return (supportOptions.regexp.test(str)) ? { name: 'email', status: true } : { name: 'email', status: false, msg: 'invalid email format'};
+    return (supportOptions.email.regexp.test(str)) ? { name: 'email', status: true } : { name: 'email', status: false, msg: 'invalid email format'};
 }
 
 /**
@@ -209,13 +213,13 @@ Validator.prototype.__id = function (str, customized = {}) {
             if((str.length % 2) !== 0){ 
                 return { name: '_id', status: false, msg: `_id has odd length is illegal in hex encoding` };
             }
-            return (supportOptions.hexRegexp.test(str)) ? { name: '_id', status: true } : { name: '_id', status: false, msg: 'invalid _id format with hex' };
+            return (supportOptions._id.hexRegexp.test(str)) ? { name: '_id', status: true } : { name: '_id', status: false, msg: 'invalid _id format with hex' };
             break;
         case 'base64':
             if((str.length % 4) !== 0){ 
                 return { name: '_id', status: false, msg: `_id's length need to be a multiple of 4 in base64 encoding` };
             }
-            return (supportOptions.base64Regexp.test(str)) ? { name: '_id', status: true } : { name: '_id', status: false, msg: 'invalid _id format with base64' };
+            return (supportOptions._id.base64Regexp.test(str)) ? { name: '_id', status: true } : { name: '_id', status: false, msg: 'invalid _id format with base64' };
             break;
     }
 }
@@ -229,3 +233,5 @@ Validator.prototype.__customize = function (str, setting) {
     // { name: xxx, regexp: xxx }
     return (setting.regexp.test(str)) ? { name: setting.name, status: true } : { name: setting.name, status: false, msg: `invalid ${setting.name} format` };
 }
+
+module.exports = Validator;
