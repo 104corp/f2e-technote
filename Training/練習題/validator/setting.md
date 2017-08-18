@@ -44,7 +44,7 @@ my.validate(data, options);
 
 -----
 
-## Documentation
+## Configuration
 
 ### Default Validator Option
 
@@ -99,23 +99,48 @@ const supportOptions = {
 } 
 ```
 
-### Public Method
+-----
 
-#### validate( input <string, object>, option <object> )
+## Public Method
+
+### validate(input, option)
+```javascript
+/**
+ * @param {string, object} input  
+ * @param {object}         option
+ */
+```
 * 驗證字串或物件的方法
 * 自訂option時，必須input和option的property name相同才能比對
 
-### Private Method
+-----
 
-#### __checkParameters( input <string, object>, option <object> )
+## Private Method
 
-#### __process( input <string, object>, option <object> )
-* 檢查是否支援某個validator時，會做以下檢查
+### __checkParameters(input, option)
+```javascript
+/**
+ * @param {string, object} input  
+ * @param {object}         option
+ */
+```
+* 檢查輸入參數的型態
+
+
+### __process(input, option)
+```javascript
+/**
+ * @param {string, object} input  
+ * @param {object}         option
+ */
+```
+* 根據input的property，自動判斷要取用哪支validator
+* 檢查是否支援某個validator時，會依序做以下檢查：
     1. 檢查 supportOptions 是否有此 property
     2. 檢查 Validator物件原型是否有對應的 private method
     3. 以上都沒有，會根據 option 呼叫 __customized() 做regular expression的比較
 
-#### __email( str <string>, customized <object> )
+### __email(str, customized)
 ```javascript
 // customized
 {
@@ -123,7 +148,7 @@ const supportOptions = {
 }
 ```
 
-#### __password( str <string>, customized <object> )
+### __password(str, customized)
 ```javascript
 // customized
 {
@@ -135,7 +160,7 @@ const supportOptions = {
 }
 ```
 
-#### __id( str <string>, customized <object> )
+### __id(str, customized)
 ```javascript
 // customized
 {
@@ -144,8 +169,9 @@ const supportOptions = {
     encoding: 'hex',      // 接受的編碼設定
 }
 ```
+* accept encoding：hex、base64
 
-#### __customize( str <string>, customized <object> )
+### __customize(str, customized)
 ```javascript
 // customized
 {
@@ -153,7 +179,9 @@ const supportOptions = {
 }
 ```
 
-### Test Environment
+-----
+
+## Test Environment
 
 選擇使用Mocha + Chai，理由如下：
 * Mocha屬於test framework，沒有內建的assertion library
@@ -164,14 +192,17 @@ npm install mocha
 npm install chai
 ```
 
-#### Test tools的介紹與比較
+### Test Concept
+* [Introducing code coverage](https://dotblogs.com.tw/hatelove/2011/12/25/introducing-code-coverage)
+
+### Test tools的介紹與比較
 * [What is the difference between a test runner, testing framework, assertion library, and a testing plugin](http://amzotti.github.io/testing/2015/03/16/what-is-the-difference-between-a-test-runner-testing-framework-assertion-library-and-a-testing-plugin/)
 * [Jasmine vs mocha, chai, and sinon](http://thejsguy.com/2015/01/12/jasmine-vs-mocha-chai-and-sinon.html)
 
-#### Test tools for React.js
+### Test tools for React.js
 * [jest](https://facebook.github.io/jest/)
 * [enzyme](https://github.com/airbnb/enzyme)
 
-#### Test tools for Node.js
+### Test tools for Node.js
 * [Mocha]() + [Chai]() / [Sinon]()
 * [Jasmine]()
