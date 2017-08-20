@@ -12,7 +12,7 @@ var test = new Function(arg1, arg2, 'return arg1+arg2;');
 ```
 
 ### Function Declaration
-* hoisting：function declaration的位置不影響程式執行，包含放在if-else判斷式內。
+* hoisting：提昇整個function宣告，因此擺放位置不影響程式執行，包含放在if-else判斷式內。
 * 宣告完會產生一個**包含closure**的Function物件。
 
 ```javascript
@@ -23,7 +23,7 @@ test();
 ### Function Expression
 * 函式名稱可以忽略，稱為匿名函式(anonymous function)，名稱存在name的property。
 * 函式有命名的話，可以在function內部遞迴呼叫自己(Recursive)，但不能在外部呼叫。
-* NO hoisting：位置會影響程式執行。
+* hoisting：只有提昇宣告(var)的變數，不提昇賦值(initialize)部分。因此，位置會影響程式執行。
 * 可使用立即執行函式(IIEF)。
 
 ```javascript
@@ -39,6 +39,20 @@ var variable = function test(arg){
 // function名稱可以忽略
 var variable = function(arg){ ... };       
 variable(arg);  // variable.name == 'variable', work
+```
+
+```javascript
+// Compare hoisting behavior
+
+// Function Declaration
+console.log(a);                        // function a(){....}, 輸出宣告
+console.log(a());                      // 'function a', 輸出執行結果
+function a(){ return 'function a'; }
+
+// Function Expression
+console.log(b);       // undefined, 僅輸出宣告(b), 未賦值(function)
+console.log(b());     // error, b的值為undefined而非function
+var b = function(){ return 'function b'; }
 ```
 
 ### 立即執行函式 IIFE (Immediately Invokable Function Expression)
@@ -62,9 +76,15 @@ var a = 50;
 * func vs func()：有括號代表函式的**執行結果(return)**。
 * 預設return undefined(沒有new) / this(有new)
 ```javascript
-var func = function(num){ return num + 10; }
-console.log(func);        // 輸出 function(num){ return num + 10; }
-console.log(func(10));    // 輸出 20
+// 沒有new
+var func = function(){}
+console.log(func);        // 輸出 function(){}
+console.log(func());      // 輸出 undefined
+
+// 有new
+function Person(){}
+console.log(Person);       // 輸出 function Person(){}
+console.log(new Person()); // 輸出 this, 這邊為物件 Person{}
 ```
 
 * 四種常見的函式呼叫pattern
@@ -107,31 +127,35 @@ console.log(func.apply(person2, ["Merry"]));  // Hello Merry, you are adult.
 ## 函式的核心觀念
 
 ### 又愛又恨的this
-* 是一個指標，按照function使用方式不同，指向不同的object
+* 是一個指標，指向this被呼叫時所屬的物件
+* 由於 browser 和 server side 有些不同，以下暫以 browser 環境說明。詳細請看 [補充]()。
+
 ```javascript
 // 1. Method Pattern: this指向物件本身(obj)
 //    這種從this取得物件環境的方法，被稱為 public method
 var obj = { addTen: function(num){ this.value = num + 10; } }
+obj.addTen(10);  // this -> obj;
 ```
 
 ```javascript
 // 2. Function Pattern: this指向當前的function，最常被誤會的點
 var func = function(num){ 
-    this.value = num;  // this -> func
-    
+    this.value = num;       // 實際執行時，this -> window
     // 10秒後加上10
     setTimeout(function(){
-        this.value += 10;  // this -> 匿名function，這邊會壞掉
+        this.value += 10;   // 實際執行時，this -> window 
+                            //    因為setTimeout為window的method
     }, 10000);
 }
+func(10);
 
 // 如果要讓內部function也能用外面的this，將this另存變數保存
 var func = function(num){ 
     var self = this;
-    self.value = num;  // this -> func, self -> func
+    self.value = num;  // this -> window, self -> window
     
     setTimeout(function(){
-        self.value += 10;  // this -> 匿名function, self -> func
+        self.value += 10;  // this -> window, self -> window
     }, 10000);
 }
 ```
@@ -143,6 +167,7 @@ function Person(name, age){
     this.age = age;
 }
 
+// 關於new如何實作的細節, 請參考下一節的 [關於new operator的運作]
 var p1 = new Person("Henry", 20);  // this -> p1
 var p2 = new Person("Joe", 28);    // this -> p2
 ```
@@ -159,7 +184,7 @@ console.log(func.call(person1, "Paul"));      // this -> person1
 console.log(func.apply(null, ["Merry"]));     // this -> null, 會壞掉
 ```
 
-* Arrow Function 和 Function在this上的差異
+#### Arrow Function 和 Function在this上的差異
 
 ```javascript
 // Arrow function的this永遠指向new建立時的function
@@ -181,6 +206,36 @@ var p2 = new Person();
 ```
 詳細請參考 [箭頭函式 Arrow Function - MDN](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Functions/Arrow_functions)。
 
+#### [補充] 淺談 Browser 與 Server side 的差異
+* Browser的最頂層物件為window，有document物件 (window.document)
+* Node的最頂層物件包含許多global objects，沒有window、document
+```javascript
+// global直接呼叫
+console.log(this);
+
+// 在瀏覽器中, this -> window;
+// 在Node的cli中, this -> 一個包含所有global objects的物件
+```
+
+* 全域變數、函式等宣告差異，請參考[這篇](https://nodejs.org/api/globals.html#globals_global)。
+    * Browser中，var、function會成為window物件上的新property
+    * Node中，var、function會成為module物件上的新property
+```javascript
+var a = 10;  
+
+// [browser]  window.a = 10, global scope
+// [node]  module.a = 10, local scope
+
+-------------------------------------
+function a(){ .... }
+
+// [browser]  window.a = a(), global scope
+// [node]  module.a = a(), local scope
+```
+
+* 事件執行差異，請參考以下文章
+    * [非同步程式碼之霧：Node.js 的事件迴圈與 EventEmitter](https://simeneer.blogspot.tw/2016/09/nodejs-eventemitter.html)
+
 ### JS中的物件導向設計(OOP)：Prototype Based
 * JS是原型繼承語言(prototypal inheritance language)，可以直接繼承其他物件的特性，不使用類別(Class)(ES6+的class其實是語法糖)。
 * 讓人聯想到class的物件製造方法：Function Declaration + new
@@ -195,6 +250,18 @@ var Laicy = new Dog();
 ```
 更多請參考[Javascript 物件導向介紹 - MDN](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Introduction_to_Object-Oriented_JavaScript)
 
+#### 關於new operator的運作
+當執行 ``` new Dog() ```時，會做以下的處理：
+```javascript
+==> {}          // 1. 從Dog.prototype建立新的空物件
+==> {}.Dog()    // 2. 呼叫Dog()當作constructor, 此時this -> {}
+                
+                
+// 3. 若Dog()有return object, 最後將回傳此object當作處理結果
+//    若沒有return任何object, 將上一步的 {} 當作處理結果。
+//    一般而言，不會在constructor function內return任何的object
+```
+詳細請參閱[這篇](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Operators/new)。
 
 ### Closure & Scoping
 
