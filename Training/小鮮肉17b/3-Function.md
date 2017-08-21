@@ -175,7 +175,7 @@ var p2 = new Person("Joe", 28);    // this -> p2
 ```javascript
 // 4. Apply & Call Pattern: 傳入this要指向的物件
 var func = function(name){ 
-    return "Hello "+name+", you are "+(this.age >= 18) ? "adult" : "teenager" + ".";
+    return "Hello "+name+", you are "+(this.age >= 18 ? "adult" : "teenager") + ".";
 };
 var person1 = { age: 12 }, 
     person2 = { age: 22 };
