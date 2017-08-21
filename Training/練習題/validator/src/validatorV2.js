@@ -9,7 +9,7 @@ const defaultOptions = {
         minLength: 8,
         maxLength: 30
     },
-    _id:{
+    id:{
         // default for mongodb objectId (type = string)
         length: 24,
         encoding: 'hex',
@@ -29,7 +29,7 @@ const supportOptions = {
             symbol: '!%@#',
         },
     },
-    _id: {
+    id: {
         hexRegexp: /[a-fA-F\d]+\b/,
         base64Regexp: /[a-fA-F\d]+\b/,
     }
@@ -210,22 +210,22 @@ Validator.prototype.__id = function (str, customized = {}) {
         setting[prop] = customized[prop];
     }
     if(str.length !== setting.length){
-        return { name: '_id', status: false, msg: `_id does not equal ${setting.length} length` };
+        return { name: 'id', status: false, msg: `id does not equal ${setting.length} length` };
     }
 
     // individual process with encoding
     switch(setting.encoding){
         case 'hex':
             if((str.length % 2) !== 0){ 
-                return { name: '_id', status: false, msg: `_id has odd length is illegal in hex encoding` };
+                return { name: 'id', status: false, msg: `id has odd length is illegal in hex encoding` };
             }
-            return (supportOptions._id.hexRegexp.test(str)) ? { name: '_id', status: true } : { name: '_id', status: false, msg: 'invalid _id format with hex' };
+            return (supportOptions._id.hexRegexp.test(str)) ? { name: 'id', status: true } : { name: 'id', status: false, msg: 'invalid id format with hex' };
             break;
         case 'base64':
             if((str.length % 4) !== 0){ 
-                return { name: '_id', status: false, msg: `_id's length need to be a multiple of 4 in base64 encoding` };
+                return { name: 'id', status: false, msg: `id's length need to be a multiple of 4 in base64 encoding` };
             }
-            return (supportOptions._id.base64Regexp.test(str)) ? { name: '_id', status: true } : { name: '_id', status: false, msg: 'invalid _id format with base64' };
+            return (supportOptions._id.base64Regexp.test(str)) ? { name: 'id', status: true } : { name: 'id', status: false, msg: 'invalid id format with base64' };
             break;
     }
 }
