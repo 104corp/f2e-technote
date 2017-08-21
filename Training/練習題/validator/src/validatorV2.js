@@ -1,6 +1,6 @@
 const defaultOptions = {
     email:{
-        maxLength: 250
+        maxLength: 250,
     },
     password:{
         acceptTypes: ['uppercase', 'lowercase', 'number', 'symbol'],
@@ -14,7 +14,7 @@ const defaultOptions = {
         length: 24,
         encoding: 'hex',
     }
-}
+};
 const supportOptions = {
     email: {
         regexp: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
@@ -48,7 +48,7 @@ function Validator(){
  */
 Validator.prototype.validate = function (input, option) {
     this.input = input;
-    this.option = option;
+    this.option = option || defaultOptions;
 
     if(!this.__checkParameters()){
         return { status: false, msg: 'input or option is empty' };
@@ -80,11 +80,17 @@ Validator.prototype.__checkParameters = function () {
  * <private> auto use correspond validator (contain custom and default)
  */
 Validator.prototype.__process = function(){
-
+    let name;
     switch(this.paramsTypes){
-        case 'ss':  // validate("test", "username")
+        
         case 'so':  // validate("test", {....})
-            let name = this.option.name || this.option;
+            // more than 1 validator, only accept ONE!!!
+            let ary = Object.getOwnPropertyNames(this.option);
+            if(ary.length > 1){
+                return { status: false, msg: 'more than one validator founded in option to validate input string' }
+            }
+            name = ary.shift();
+            
             // not in supported list
             if(!supportOptions[name]){
                 return { status: false, msg: 'this name of validator is not supported' }
@@ -94,13 +100,28 @@ Validator.prototype.__process = function(){
                 return { status: false, msg: 'cannot find correspond validate method' }
             }
             // call correspond private method
-            return this['__'+name](input, option);
+            return this['__'+name](this.input, this.option[name]);
 
+        case 'ss':  // validate("test", "username")
+            name = this.option;
+            // not in supported list
+            if(!supportOptions[name]){
+                return { status: false, msg: 'this name of validator is not supported' }
+            }
+            // not find correspond method
+            if(!(("__"+name) in this)){
+                return { status: false, msg: 'cannot find correspond validate method' }
+            }
+            // call correspond private method
+            return this['__'+name](this.input, {});
+
+        //case 'ou':   // validate({ ... })
         case 'oo':  // validate({ ... }, { .... })
             let msgStack = [];
-            for(let name in input){
+            for(let name in this.input){
+                
                 // not in supported list or not find correspond method
-                if(!supportOptions[name] || !this.hasOwnProperty(name)){
+                if(!supportOptions.hasOwnProperty(name) || !(('__'+name) in this)){
                     // no customized validator in options, error
                     if(!this.option[name]){
                         msgStack.push({ status: false, msg: 'unsupported validator, and customized validator not found in option' });
@@ -127,10 +148,13 @@ Validator.prototype.__process = function(){
  */
 Validator.prototype.__email = function (str, customized = {}) {
     let setting = defaultOptions.email;
+    console.log("customized is below");
+    console.log(customized);//FIXME:
 
     for(let prop in customized){
         setting[prop] = customized[prop];
     }
+    
     if(str.length > setting.maxLength){
         return { name: 'email', status: false, msg: 'email exceed maximum length'};
     }

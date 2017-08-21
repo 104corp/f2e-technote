@@ -21,7 +21,7 @@ const my = new Validator();
 ### Usage
 ```javascript
 my.validate("test@test.com", "email");
-my.validate("test@test.com", { name: "email", maxLength: 100 });
+my.validate("test@test.com", { email: { maxLength: 100 }});
 
 var data = {
     email: "test@test.com",
