@@ -83,18 +83,18 @@ const supportOptions = {
         regexp: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     },
     password: {
-        confusedCharsRegexp: /0oO1lIi/,
+        confusedCharsRegexp: /[0oO1lIi]/,
         oneUppercaseRegexp: /[A-Z]/,
         types: {
             uppercase: 'A-Z',
             lowercase: 'a-z',
             number: '0-9',
             symbol: '!%@#',
-        },  
+        },
     },
     id: {
-        hexRegexp: /[a-fA-F\d]+\b/,
-        base64Regexp: /[a-fA-F\d]+\b/,
+        hexRegexp: /^[a-fA-F\d]+$/,
+        base64Regexp: /^[\w\d+/=]+$/,
     }
 } 
 ```
@@ -159,7 +159,7 @@ const supportOptions = {
 ```
 * accept encoding：hex、base64
 
-### __customize(str, customized)
+### __customize(name, str, customized)
 ```javascript
 // customized
 {

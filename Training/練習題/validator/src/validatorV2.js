@@ -128,7 +128,7 @@ Validator.prototype.__process = function(){
                         continue;
                     }
                     // call customized validator
-                    msgStack.push(this.__customize(this.input[name], this.option[name]));
+                    msgStack.push(this.__customize(name, this.input[name], this.option[name]));
                 }else{
                     // customized setting can overwrite default setting
                     msgStack.push(this['__'+name](this.input[name], this.option[name]));
@@ -235,9 +235,9 @@ Validator.prototype.__id = function (str, customized = {}) {
  * @param {string} str     input str
  * @param {object} setting customized validator setting
  */
-Validator.prototype.__customize = function (str, setting) {
+Validator.prototype.__customize = function (name, str, setting) {
     // { name: xxx, regexp: xxx }
-    return (setting.regexp.test(str)) ? { name: setting.name, status: true } : { name: setting.name, status: false, msg: `invalid ${setting.name} format` };
+    return (setting.regexp.test(str)) ? { name, status: true } : { name, status: false, msg: `invalid ${name} format` };
 }
 
 module.exports = Validator;

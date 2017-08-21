@@ -89,22 +89,114 @@ describe('Public method validate()', () => {
     });
     describe('# Customized Validator', () => {
         it('custom option', () => {
+            // valid
+            assert.deepEqual(Validator.validate({ phone: "0912345678" }, { phone: { regexp: /09\d{8}/ }}), [{ name: 'phone', status: true }], 'should be valid format with custom phone validator');
             
+            // invalid
+            assert.deepEqual(Validator.validate({ phone: "0812345678" }, { phone: { regexp: /09\d{8}/ }}), [{ name: 'phone', status: false, msg: 'invalid phone format' }], 'should be valid format with custom phone validator');
         });
     });
     describe('# Multi Validator', () => {
-        it('no custom option', () => {
+        it('built-in validator', () => {
+            let option = {};
+            const input = {
+                email: "test@test.com",
+                id: "SrYc9Gt4sPBBIxbbNYluZk3SwH8=",
+                password: "a!GkjArq497AA7br#"
+            };
+            let expectStack = [
+                { name: "email", status: true },
+                { name: "id", status: true },
+                { name: "password", status: true },
+            ]
 
+            // valid
+            option = {
+                email: {
+                    maxLength: 20
+                },
+                id: {
+                    length: 28,
+                    encoding: 'base64'
+                },
+                password: {
+                    atLeastOneUppercase: true,
+                    avoidConfusedChars: true
+                }
+            }
+            assert.deepEqual(Validator.validate(input, option), expectStack, 'should be all valid with all custom options');
+            assert.deepEqual(Validator.validate(input, { id: { length: 28, encoding: 'base64' }}), expectStack, 'should be all valid with custom & default options mixed');
+
+            // invalid
+            expectStack = [
+                { name: "email", status: true },
+                { name: "id", status: false, msg: 'id does not equal 24 length' },
+                { name: "password", status: true },
+            ]
+            assert.deepEqual(Validator.validate(input), expectStack, 'should be partial invalid with built-in validator');
         });
-        it('with custom option', () => {
+        it('custom validator', () => {
+            let option = {};
+            const input = {
+                phone: "0912345678",
+                birth: "2017-08-21"
+            };
+            let expectStack = [
+                { name: "phone", status: true },
+                { name: "birth", status: true },
+            ]
 
+            // valid
+            option = {
+                phone: { regexp: /09\d{8}/ },
+                birth: { regexp: /^\d{4}\-\d{2}\-\d{2}$/ }
+            }
+            assert.deepEqual(Validator.validate(input, option), expectStack, 'should be all valid with all custom validator');
+
+            // invalid
+            option = {
+                phone: { regexp: /09\d{8}/ },
+                birth: { regexp: /^\d{2}\-\d{2}\-\d{2}$/ }
+            }
+            expectStack = [
+                { name: "phone", status: true },
+                { name: "birth", status: false,  msg: 'invalid birth format' },
+            ]
+            assert.deepEqual(Validator.validate(input, option), expectStack, 'should be partial invalid with custom validator');
+        });
+        it('mixed validator', () => {
+            const input = {
+                id: "SrYc9Gt4sPBBIxbbNYluZk3SwH8=",
+                password: "a!GkjArq497AA7br#",
+                email: "test@test.com",
+                phone: "0912345678",
+                birth: "2017-08-21"
+            };
+            let options = {
+                password: {
+                    atLeastOneUppercase: true,
+                    avoidConfusedChars: true
+                },
+                phone: { regexp: /09\d{8}/ },
+                birth: { regexp: /^\d{2}\-\d{2}\-\d{2}$/ }
+            }
+            let expectStack = [
+                { name: "id", status: false, msg: 'id does not equal 24 length' },
+                { name: "password", status: true },
+                { name: "email", status: true },
+                { name: "phone", status: true },
+                { name: "birth", status: false,  msg: 'invalid birth format' },
+            ]
+
+            // invalid
+            assert.deepEqual(Validator.validate(input, options), expectStack, 'should be partial invalid with mixed validator');
         });
     });
 });
 
 /**
  * basic default option test with same valid / invalid input
- * @param {string} validatorName       validator's name (ex: email, password, _id...)
+ * @param {string} validatorName       validator's name (ex: email, password, id...)
  * @param {string} inputValidStr       input will be true
  * @param {string} inputInvalidStr     input will be false
  */
