@@ -30,8 +30,8 @@ const supportOptions = {
         },
     },
     id: {
-        hexRegexp: /[a-fA-F\d]+\b/,
-        base64Regexp: /[a-fA-F\d]+\b/,
+        hexRegexp: /^[a-fA-F\d]+$/,
+        base64Regexp: /^[\w\d+/=]+$/,
     }
 }
 
@@ -204,7 +204,7 @@ Validator.prototype.__password = function (str, customized = {}) {
  * @param {object} customized customized setting in option
  */
 Validator.prototype.__id = function (str, customized = {}) {
-    let setting = JSON.parse(JSON.stringify(defaultOptions._id));
+    let setting = JSON.parse(JSON.stringify(defaultOptions.id));
 
     for(let prop in customized){
         setting[prop] = customized[prop];
@@ -219,13 +219,13 @@ Validator.prototype.__id = function (str, customized = {}) {
             if((str.length % 2) !== 0){ 
                 return { name: 'id', status: false, msg: `id has odd length is illegal in hex encoding` };
             }
-            return (supportOptions._id.hexRegexp.test(str)) ? { name: 'id', status: true } : { name: 'id', status: false, msg: 'invalid id format with hex' };
+            return (supportOptions.id.hexRegexp.test(str)) ? { name: 'id', status: true } : { name: 'id', status: false, msg: 'invalid id format' };
             break;
         case 'base64':
             if((str.length % 4) !== 0){ 
                 return { name: 'id', status: false, msg: `id's length need to be a multiple of 4 in base64 encoding` };
             }
-            return (supportOptions._id.base64Regexp.test(str)) ? { name: 'id', status: true } : { name: 'id', status: false, msg: 'invalid id format with base64' };
+            return (supportOptions.id.base64Regexp.test(str)) ? { name: 'id', status: true } : { name: 'id', status: false, msg: 'invalid id format' };
             break;
     }
 }

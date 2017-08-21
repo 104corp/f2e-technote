@@ -72,19 +72,19 @@ describe('Public method validate()', () => {
         });
         it('custom option - hex', () => {
             // valid
-            assert.deepEqual(Validator.validate("b18c15ce973f930ef1132d8cb25237f2a881e370", { _id: { length: 40 }}), { name: '_id', status: true }, 'should be valid format with larger length');
+            assert.deepEqual(Validator.validate("b18c15ce973f930ef1132d8cb25237f2a881e370", { id: { length: 40 }}), { name: 'id', status: true }, 'should be valid format with larger length');
 
             // invalid
-            assert.deepEqual(Validator.validate("b18c15ce973f930ef1132d8cb252372a881e370", { _id: { length: 39 }}), { name: '_id', status: false, msg: '_id has odd length is illegal in hex encoding' }, 'should be invalid format with odd length');
-            assert.deepEqual(Validator.validate("b18c15ce973f930ef1132d8cb2zz37f2a881e370", { _id: { length: 40 }}), { name: '_id', status: false, msg: 'invalid _id format with hex' }, 'should be invalid format with unsupported character');
+            assert.deepEqual(Validator.validate("b18c15ce973f930ef1132d8cb252372a881e370", { id: { length: 39 }}), { name: 'id', status: false, msg: 'id has odd length is illegal in hex encoding' }, 'should be invalid format with odd length');
+            assert.deepEqual(Validator.validate("b18c15ce973f930ef1132d8cb2zz37f2a881e370", { id: { length: 40 }}), { name: 'id', status: false, msg: 'invalid id format' }, 'should be invalid format with unsupported character');
         });
         it('custom option - base64', () => {
             // valid
-            assert.deepEqual(Validator.validate("k9W7RFL3vKkj3232W24Ozb3QzJU=", { _id: { length: 28, encoding: 'base64' }}), { name: '_id', status: true }, 'should be valid format with larger length');
+            assert.deepEqual(Validator.validate("k9W7RFL3vKkj3232W24Ozb3QzJU=", { id: { length: 28, encoding: 'base64' }}), { name: 'id', status: true }, 'should be valid format with larger length');
 
             // invalid
-            assert.deepEqual(Validator.validate("k9W7RFL3vKkj3232W24Ozb3QzJU=", { _id: { length: 30, encoding: 'base64' }}), { name: '_id', status: false, msg: '_id does not equal 30 length' }, 'should be invalid format with length mismatch');
-            assert.deepEqual(Validator.validate("k9W7RFL3vKkj3232W24Ozb3QzJ", { _id: { length: 26, encoding: 'base64' }}), { name: '_id', status: false, msg: "_id's length need to be a multiple of 4 in base64 encoding" }, 'should be invalid format with length not be a multiple of 4');
+            assert.deepEqual(Validator.validate("k9W7RFL3vKkj3232W24Ozb3QzJU=", { id: { length: 30, encoding: 'base64' }}), { name: 'id', status: false, msg: 'id does not equal 30 length' }, 'should be invalid format with length mismatch');
+            assert.deepEqual(Validator.validate("k9W7RFL3vKkj3232W24Ozb3QzJ", { id: { length: 26, encoding: 'base64' }}), { name: 'id', status: false, msg: "id's length need to be a multiple of 4 in base64 encoding" }, 'should be invalid format with length not be a multiple of 4');
         });
     });
     describe('# Customized Validator', () => {

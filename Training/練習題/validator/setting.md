@@ -48,7 +48,7 @@ my.validate(data, options);
 
 ### Default Validator Option
 
-* 預設支援3種validator：email、password、_id
+* 預設支援3種validator：email、password、id
 * 未傳入option時，將預設套用defaultOptions的設定。
 * 傳入option時，新設定會覆蓋舊的設定。
 
@@ -65,7 +65,7 @@ const defaultOptions = {
         minLength: 8,
         maxLength: 30
     },
-    _id:{
+    id:{
         // default for mongodb objectId (type = string)
         length: 24,
         encoding: 'hex',
@@ -92,7 +92,7 @@ const supportOptions = {
             symbol: '!%@#',
         },  
     },
-    _id: {
+    id: {
         hexRegexp: /[a-fA-F\d]+\b/,
         base64Regexp: /[a-fA-F\d]+\b/,
     }
