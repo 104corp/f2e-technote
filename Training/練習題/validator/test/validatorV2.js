@@ -49,7 +49,7 @@ describe('Public method validate()', () => {
             assert.deepEqual(Validator.validate("00gg00", "password"), { name: 'password', status: false, msg: 'password too short, at least 8 characters' }, 'should be invalid format with string default option');
             assert.deepEqual(Validator.validate("00gg00", { password: {} }), { name: 'password', status: false, msg: 'password too short, at least 8 characters' }, 'should be invalid format with object default option');
             assert.deepEqual(Validator.validate({ password: "00gg00" }), [{ name: 'password', status: false, msg: 'password too short, at least 8 characters' }], 'should be invalid format with object input and no default option');
-            assert.deepEqual(Validator.validate({ password: "00gg00" }, "password"), [{ name: 'password', status: false, msg: 'password too short, at least 8 characters' }], 'should be invalid format with object input and string default option');
+            assert.deepEqual(Validator.validate({ password: "00gg00" }, "password"), { status: false, msg: 'error usage due to invalid input or option data type' }, 'should be invalid format with object input and string default option');
             assert.deepEqual(Validator.validate({ password: "00gg00" }, { password: {} }), [{ name: 'password', status: false, msg: 'password too short, at least 8 characters' }], 'should be invalid format with object input and default option');
         });
         it('custom option', () => {
@@ -57,7 +57,7 @@ describe('Public method validate()', () => {
             assert.deepEqual(Validator.validate("ABCDEFGH", { password: { acceptTypes: ['uppercase'] }}), { name: 'password', status: true }, 'should be valid format with only accept uppercase');
             assert.deepEqual(Validator.validate("abcdefgh", { password: { acceptTypes: ['lowercase'] }}), { name: 'password', status: true }, 'should be valid format with only accept lowercase');
             assert.deepEqual(Validator.validate("88888888", { password: { acceptTypes: ['number'] }}), { name: 'password', status: true }, 'should be valid format with only accept numbers');
-            assert.deepEqual(Validator.validate("!@!@-_##", { password: { acceptTypes: ['symbol'] }}), { name: 'password', status: true }, 'should be valid format with only accept symbol');
+            assert.deepEqual(Validator.validate("!@!@%%##", { password: { acceptTypes: ['symbol'] }}), { name: 'password', status: true }, 'should be valid format with only accept symbol');
             assert.deepEqual(Validator.validate("ffggff88", { password: { avoidConfusedChars: true }}), { name: 'password', status: true }, 'should be valid format with no confused characters');
             assert.deepEqual(Validator.validate("ffgGff88", { password: { atLeastOneUppercase: true }}), { name: 'password', status: true }, 'should be valid format with at least one Uppercase character');
             assert.deepEqual(Validator.validate("00gg00iiffddpo", { password: { minLength: 12 }}), { name: 'password', status: true }, 'should be valid format with custom minLength');

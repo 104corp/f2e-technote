@@ -20,7 +20,7 @@ const supportOptions = {
         regexp: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     },
     password: {
-        confusedCharsRegexp: /0oO1lIi/,
+        confusedCharsRegexp: /[0oO1lIi]/,
         oneUppercaseRegexp: /[A-Z]/,
         types: {
             uppercase: 'A-Z',
@@ -61,8 +61,8 @@ Validator.prototype.validate = function (input, option) {
  * <private> check parameters are available, and return their types
  */
 Validator.prototype.__checkParameters = function () {
-    let inputType = (typeof this.input).substr(0, 1);    //FIXME: maybe error
-    let optionType = (typeof this.option).substr(0, 1);  //FIXME: maybe error
+    let inputType = (typeof this.input).substr(0, 1);    
+    let optionType = (typeof this.option).substr(0, 1);  
 
     if( (inputType === 's' && !this.input) || 
         (inputType === 'o' && !Object.keys(this.input).length) ||
@@ -147,9 +147,7 @@ Validator.prototype.__process = function(){
  * @param {object} customized customized setting in option
  */
 Validator.prototype.__email = function (str, customized = {}) {
-    let setting = defaultOptions.email;
-    console.log("customized is below");
-    console.log(customized);//FIXME:
+    let setting = JSON.parse(JSON.stringify(defaultOptions.email));
 
     for(let prop in customized){
         setting[prop] = customized[prop];
@@ -169,7 +167,7 @@ Validator.prototype.__email = function (str, customized = {}) {
 Validator.prototype.__password = function (str, customized = {}) {
     let regexp;
     let regexpStr;
-    let setting = defaultOptions.password;
+    let setting = JSON.parse(JSON.stringify(defaultOptions.password));
 
     for(let prop in customized){
         setting[prop] = customized[prop];
@@ -189,11 +187,11 @@ Validator.prototype.__password = function (str, customized = {}) {
         return { name: 'password', status: false, msg: 'invalid password format' };
     }
     // if avoidConfusedChars is true
-    if(setting.avoidConfusedChars && supportOptions.password.confusedCharsRegexp.test(input)){
+    if(setting.avoidConfusedChars && supportOptions.password.confusedCharsRegexp.test(str)){
         return { name: 'password', status: false, msg: 'contain confused characters in password' };
     }
     // if atLeastOneUppercase is true
-    if(setting.atLeastOneUppercase && !supportOptions.password.oneUppercaseRegexp.test(input)){
+    if(setting.atLeastOneUppercase && !supportOptions.password.oneUppercaseRegexp.test(str)){
         return { name: 'password', status: false, msg: 'at least contain one uppercase characters in password' };
     }
 
@@ -206,7 +204,7 @@ Validator.prototype.__password = function (str, customized = {}) {
  * @param {object} customized customized setting in option
  */
 Validator.prototype.__id = function (str, customized = {}) {
-    let setting = defaultOptions._id;
+    let setting = JSON.parse(JSON.stringify(defaultOptions._id));
 
     for(let prop in customized){
         setting[prop] = customized[prop];
