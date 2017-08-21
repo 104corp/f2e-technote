@@ -183,7 +183,7 @@ var person1 = { age: 12 },
 console.log(func.call(person1, "Paul"));      // this -> person1
 console.log(func.apply(null, ["Merry"]));     // this -> null, 會壞掉
 ```
-
+> 若非使用 strict mode ，apply(null, ["Merry"]) 會將 this 綁到 window/global
 #### Arrow Function 和 Function在this上的差異
 
 ```javascript
