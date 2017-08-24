@@ -2,6 +2,8 @@
 
 * [Front-end handbook 2017](https://frontendmasters.com/books/front-end-handbook/2017/)
 
+* [DevDocs - 眾多API文件大全](http://devdocs.io/)
+
 * [gulp.js](https://github.com/gulpjs/gulp/tree/master/docs)
 
 ## Webpack
