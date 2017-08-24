@@ -23,7 +23,7 @@ test();
 ### Function Expression
 * 函式名稱可以忽略，稱為匿名函式(anonymous function)，名稱存在name的property。
 * 函式有命名的話，可以在內部使用函式名稱遞迴呼叫(Recursive)，例如：test()，但不能在外部呼叫。
-    * 補充：以前匿名函式可以用arguments.callee呼叫自己，但ES5後strict mode被禁用。詳情參考[這篇](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Functions/arguments/callee)。
+  * 補充：以前匿名函式可以用arguments.callee呼叫自己，但ES5後strict mode被禁用。詳情參考[這篇](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Functions/arguments/callee)。
 * hoisting：只有提昇宣告(var)的變數，不提昇賦值(initialize)部分。因此，位置會影響程式執行。
 * 可使用立即執行函式(IIEF)。
 
@@ -129,15 +129,15 @@ console.log(func.apply(person2, ["Merry"]));  // Hello Merry, you are adult.
 
 ### 又愛又恨的this
 
-* 由於 browser 和 server side 有些不同，以下暫以 browser 環境說明。詳細請看 [補充]()。
+* 由於 browser 和 server side 有些不同，以下暫以 browser 環境說明。詳細請看 [補充](https://github.com/104corp/f2e-technote/blob/master/Training/%E5%B0%8F%E9%AE%AE%E8%82%8917b/3-Function.md#補充-淺談-browser-與-server-side-的差異)。
 * 是一個指標，根據「被呼叫的情境」決定值，詳細的解說請參考[這篇](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)。
-    * Global Context：在global直接呼叫，不論是否為strict mode，this皆指向global object。在瀏覽器中為window物件。
-    * Function Context：若在function中，根據function被呼叫的方式有所不同
-        * Method呼叫：透過 obj.func 或者 obj[func] 呼叫，this指向obj
-        * 一般函式呼叫：func() 直接呼叫函式，不論巢狀與否，this一律使用預設值(strict mode為undefined、一般瀏覽器中為window)
-        * 建構式呼叫：由於new的運作，使得this指向新產生的instance物件。
-        * 手動綁定：透過bind、apply、call等方式，將this明確指向某物件。如果傳入值不是object，會自動wrap成對應的物件。
-        * event handler：指向觸發事件的DOM物件。
+  * Global Context：global直接呼叫，不論是否為strict mode，this皆指向global object。瀏覽器中為window物件。
+  * Function Context：若在function中，根據function被呼叫的方式有所不同
+    * Method呼叫：透過 obj.func 或者 obj[func] 呼叫，this指向obj
+    * 一般函式呼叫：func() 直接呼叫函式，不論巢狀與否，this一律使用預設值(strict mode為undefined、一般瀏覽器中為window)
+    * 建構式呼叫：由於new的運作，使得this指向新產生的instance物件。
+    * 手動綁定：透過bind、apply、call等方式，將this明確指向某物件。如果傳入值不是object，會自動wrap成對應的物件。
+    * event handler：指向觸發事件的DOM物件。
 
 #### Global Context
 ```javascript
