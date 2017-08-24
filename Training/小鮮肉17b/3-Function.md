@@ -131,19 +131,15 @@ console.log(func.apply(person2, ["Merry"]));  // Hello Merry, you are adult.
 
 * 由於 browser 和 server side 有些不同，以下暫以 browser 環境說明。詳細請看 [補充](https://github.com/104corp/f2e-technote/blob/master/Training/%E5%B0%8F%E9%AE%AE%E8%82%8917b/3-Function.md#補充-淺談-browser-與-server-side-的差異)。
 * 是一個指標，根據「被呼叫的情境」決定值，詳細的解說請參考[這篇](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)。
-  * Global Context：global直接呼叫，不論是否為strict mode，this皆指向global object。瀏覽器中為window物件。
-  * Function Context：若在function中，根據function被呼叫的方式有所不同
-    * Method呼叫：透過 obj.func 或者 obj[func] 呼叫，this指向obj
-    * 一般函式呼叫：func() 直接呼叫函式，不論巢狀與否，this一律使用預設值(strict mode為undefined、一般瀏覽器中為window)
-    * 建構式呼叫：由於new的運作，使得this指向新產生的instance物件。
-    * 手動綁定：透過bind、apply、call等方式，將this明確指向某物件。如果傳入值不是object，會自動wrap成對應的物件。
-    * event handler：指向觸發事件的DOM物件。
 
 #### Global Context
+* global直接呼叫，不論是否為strict mode，this皆指向global object。瀏覽器中為window物件。
 ```javascript
 console.log(this);  // window
 ```
 #### Function Context
+若在function中，根據function被呼叫的方式有所不同
+1. Method呼叫：透過 obj.func 或者 obj[func] 呼叫，this指向obj
 ```javascript
 // 1. Method Pattern: this指向物件本身(obj)
 //    這種從this取得物件環境的方法，被稱為 public method
@@ -151,6 +147,7 @@ var obj = { addTen: function(num){ this.value = num + 10; } }
 obj.addTen(10);  // this -> obj;
 ```
 
+2. 一般函式呼叫：func() 直接呼叫函式，不論巢狀與否，this一律使用預設值(strict mode為undefined、一般瀏覽器中為window)
 ```javascript
 // 2. Function Pattern: this採用預設值
 var func = function(num){ 
@@ -173,6 +170,7 @@ var func = function(num){
 }
 ```
 
+3. 建構式呼叫：由於new的運作，使得this指向新產生的instance物件。
 ```javascript
 // 3. Constructor Pattern: this指向當前new出來instance
 function Person(name, age){
@@ -185,6 +183,7 @@ var p1 = new Person("Henry", 20);  // this -> p1
 var p2 = new Person("Joe", 28);    // this -> p2
 ```
 
+4. 手動綁定：透過bind、apply、call等方式，將this明確指向某物件。如果傳入值不是object，會自動wrap成對應的物件。
 ```javascript
 // 4. Apply & Call Pattern: 傳入this要指向的物件
 // 若使用 non-strict mode ，apply(null, ["Merry"]) 會將 this 綁到 window/global
@@ -198,6 +197,7 @@ console.log(func.call(person1, "Paul"));      // this -> person1
 console.log(func.apply(null, ["Merry"]));     // this -> null, 會壞掉
 ```
 
+5. event handler：指向觸發事件的DOM物件。
 ```html
 <!-- 5. event handler -->
 <a id="test" href="#">test</a>
@@ -213,7 +213,7 @@ console.log(func.apply(null, ["Merry"]));     // this -> null, 會壞掉
 * 以「所在作用域的this」當作自己的this值。
 
 ```javascript
-// Arrow function的this永遠指向new建立時的function
+// Arrow function以執行當下作用域的this當作自己的this值
 function Person(){
   var timer = setInterval(() => {
     this.age = (this.age !== undefined) ? this.age + 10: 0;  // this -> p1
@@ -222,11 +222,11 @@ function Person(){
 var p1 = new Person();
 
 
-// Function的this會隨著所在function不同而改變指向
+// Function的this會隨著呼叫方式不同而改變指向
 function Person(){
   var timer = setInterval(function(){
-    this.age = (this.age !== undefined) ? this.age + 10: 0;  // this -> 匿名function
-  }, 1000);
+    this.age = (this.age !== undefined) ? this.age + 10: 0;  // this -> window (window.setInterval)
+  }, 1000);
 }
 var p2 = new Person();
 ```
