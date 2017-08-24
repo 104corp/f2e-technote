@@ -22,7 +22,8 @@ test();
 
 ### Function Expression
 * 函式名稱可以忽略，稱為匿名函式(anonymous function)，名稱存在name的property。
-* 函式有命名的話，可以在function內部遞迴呼叫自己(Recursive)，但不能在外部呼叫。
+* 函式有命名的話，可以在內部使用函式名稱遞迴呼叫(Recursive)，例如：test()，但不能在外部呼叫。
+    * 補充：以前匿名函式可以用arguments.callee呼叫自己，但ES5後strict mode被禁用。詳情參考[這篇](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Functions/arguments/callee)。
 * hoisting：只有提昇宣告(var)的變數，不提昇賦值(initialize)部分。因此，位置會影響程式執行。
 * 可使用立即執行函式(IIEF)。
 
@@ -127,9 +128,22 @@ console.log(func.apply(person2, ["Merry"]));  // Hello Merry, you are adult.
 ## 函式的核心觀念
 
 ### 又愛又恨的this
-* 是一個指標，指向this被呼叫時所屬的物件
-* 由於 browser 和 server side 有些不同，以下暫以 browser 環境說明。詳細請看 [補充]()。
 
+* 由於 browser 和 server side 有些不同，以下暫以 browser 環境說明。詳細請看 [補充]()。
+* 是一個指標，根據「被呼叫的情境」決定值，詳細的解說請參考[這篇](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)。
+    * Global Context：在global直接呼叫，不論是否為strict mode，this皆指向global object。在瀏覽器中為window物件。
+    * Function Context：若在function中，根據function被呼叫的方式有所不同
+        * Method呼叫：透過 obj.func 或者 obj[func] 呼叫，this指向obj
+        * 一般函式呼叫：func() 直接呼叫函式，不論巢狀與否，this一律使用預設值(strict mode為undefined、一般瀏覽器中為window)
+        * 建構式呼叫：由於new的運作，使得this指向新產生的instance物件。
+        * 手動綁定：透過bind、apply、call等方式，將this明確指向某物件。如果傳入值不是object，會自動wrap成對應的物件。
+        * event handler：指向觸發事件的DOM物件。
+
+#### Global Context
+```javascript
+console.log(this);  // window
+```
+#### Function Context
 ```javascript
 // 1. Method Pattern: this指向物件本身(obj)
 //    這種從this取得物件環境的方法，被稱為 public method
@@ -138,16 +152,15 @@ obj.addTen(10);  // this -> obj;
 ```
 
 ```javascript
-// 2. Function Pattern: this指向當前的function，最常被誤會的點
+// 2. Function Pattern: this採用預設值
 var func = function(num){ 
-    this.value = num;       // 實際執行時，this -> window
-    // 10秒後加上10
+    console.log(this);       // this -> window (non-strict mode) / undefined (strict mode)
     setTimeout(function(){
-        this.value += 10;   // 實際執行時，this -> window 
-                            //    因為setTimeout為window的method
-    }, 10000);
+        console.log(this);   // this -> window (either strict mode & non-strict mode) 
+                             // 因為setTimeout為window的method
+    }, 10000);
 }
-func(10);
+func();
 
 // 如果要讓內部function也能用外面的this，將this另存變數保存
 var func = function(num){ 
@@ -174,6 +187,7 @@ var p2 = new Person("Joe", 28);    // this -> p2
 
 ```javascript
 // 4. Apply & Call Pattern: 傳入this要指向的物件
+// 若使用 non-strict mode ，apply(null, ["Merry"]) 會將 this 綁到 window/global
 var func = function(name){ 
     return "Hello "+name+", you are "+(this.age >= 18 ? "adult" : "teenager") + ".";
 };
@@ -183,8 +197,20 @@ var person1 = { age: 12 },
 console.log(func.call(person1, "Paul"));      // this -> person1
 console.log(func.apply(null, ["Merry"]));     // this -> null, 會壞掉
 ```
-> 若非使用 strict mode ，apply(null, ["Merry"]) 會將 this 綁到 window/global
+
+```html
+<!-- 5. event handler -->
+<a id="test" href="#">test</a>
+<script>
+    document.getElementById("test").onclick = function(){
+        console.log(this);    // <a id="test" href="#">test</a>
+    };
+</script>
+```
+
 #### Arrow Function 和 Function在this上的差異
+* Arrow Function不產生自己的this值，因此call、apply等方式對它無效
+* 以「所在作用域的this」當作自己的this值。
 
 ```javascript
 // Arrow function的this永遠指向new建立時的function
@@ -204,7 +230,10 @@ function Person(){
 }
 var p2 = new Person();
 ```
-詳細請參考 [箭頭函式 Arrow Function - MDN](https://developer.mozilla.org/zh-TW/docs/Web/JavaScript/Reference/Functions/Arrow_functions)。
+詳細請參考以下資料：
+* [Arrow Function - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)
+* [this - MDN](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this)。
+* [this值的產生歸則是什麼？](https://eyesofkids.gitbooks.io/javascript-start-from-es6/content/part4/this.html#this值的產生規則是什麼？)
 
 #### [補充] 淺談 Browser 與 Server side 的差異
 * Browser的最頂層物件為window，有document物件 (window.document)
