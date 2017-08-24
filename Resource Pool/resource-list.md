@@ -1,5 +1,7 @@
 # Front-end Resource
 
+* [Front-end handbook 2017](https://frontendmasters.com/books/front-end-handbook/2017/)
+
 * [gulp.js](https://github.com/gulpjs/gulp/tree/master/docs)
 
 ## Webpack
