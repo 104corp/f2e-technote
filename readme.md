@@ -7,6 +7,9 @@
 以Markdown 格式撰寫，著重在心得而不是流水帳記錄
 能夠附上Resource & 投影片更好
 
+請fork一份進行修改，再發送pull request
+不太清楚怎麼做的，可以參考[這篇說明](./git-work.md)
+
 ## 技術內容討論
 
 可以直接開 #issue 討論
