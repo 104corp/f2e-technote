@@ -155,3 +155,4 @@ ModuleB.func();                        // 相同func，依賴離他最近的modu
 ## Reference
 * [JavaScript 模块化七日谈](http://huangxuan.me/2015/07/09/js-module-7day/)
 * [React 生態系（Ecosystem）入門簡介](https://github.com/kdchang/reactjs101/blob/master/Ch01/react-ecosystem-introduction.md)
+* [使用 AMD、CommonJS 及 ES Harmony 编写模块化的 JavaScript](http://justineo.github.io/singles/writing-modular-js/)
