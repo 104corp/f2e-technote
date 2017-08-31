@@ -141,3 +141,12 @@ a:active{}
     * inherit：繼承自parent
     * initial：使用瀏覽器預設的style値，如果沒有預設値，會自動改繼承parent
     * unset：Reset，恢復到預設
+
+-----
+
+## Box Model
+
+
+
+## Display
+
