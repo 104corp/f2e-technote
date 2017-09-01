@@ -46,7 +46,7 @@ var regexp = new RegExp(`[${str}]{${inputOptions.minLength},${inputOptions.maxLe
 
 ## 使用情境
 
-這邊僅列出常用的情境。每個符號的意義，請直接參考 [檢驗工具 & Cheatsheet]() 這個section。
+這邊僅列出常用的情境。每個符號的意義，請直接參考 [檢驗工具 & Cheatsheet](https://github.com/104corp/f2e-technote/blob/master/Book/%E3%80%90Book%E3%80%91Javasript%20Good%20Part/Chapter%20%237.md#檢驗工具--cheatsheet) 這個section。
 
 ### 1. 檢查字串格式符合與否
 ```javascript
