@@ -16,6 +16,7 @@
 * [JavaScript.Info](https://javascript.info/)：很詳盡的JS觀念教學
 * [JavaScript The Right Way](http://jstherightway.org/)
 * [JavaScript 30 Days](https://javascript30.com/)
+* [Javascript WTF](https://github.com/denysdovhan/wtfjs?utm_source=mybridge&utm_medium=blog&utm_campaign=read_more#-is-equal-)
 
 ## Task
 * [gulp.js](https://github.com/gulpjs/gulp/tree/master/docs)
