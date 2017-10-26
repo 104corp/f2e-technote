@@ -53,7 +53,7 @@ git config push.default upstream    // 預設為matching，找到相同名稱bra
 ```bash
 git config -l                 // 列出所有config
 git remote -v                 // 列出所有遠端庫
-git remote show <branchname>  // 顯示該遠端branch詳細資料，包含push、pull對應的本地branch
+git remote show <remote repo name>  // 顯示該遠端repo詳細資料，包含push、pull對應的本地branch
 ```
 
 ## 工作流程
