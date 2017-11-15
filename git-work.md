@@ -90,3 +90,40 @@ git remote show <remote repo name>  // 顯示該遠端repo詳細資料，包含p
 ```bash
 [writing] git push
 ```
+
+### 補充：
+
+若不想要 pull merge 時有merge commit，可以參考[有關rebase的教學](https://blog.yorkxin.org/2011/07/29/git-rebase)，以下列出幾個常見的：
+
+```Bash
+// 移花接木：現有分支上的commit接到另一條分支
+[writing] git rebase --onto <[master] 新接點commit sha> <[writing] 現有接點commit sha>
+
+// 先執行pull，再將現有分支的變更 rebase 上去
+[master] git pull --rebase
+```
+
+
+
+## 團隊協作規範範本
+
+### Commit Template
+
+```bash
+git config --global commit.template $HOME/.gitmessage.txt
+
+// 只能使用絕對路徑，一個檔案就能跨多個 repo 使用
+```
+
+- [教學文件](https://git-scm.com/book/zh/v1/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-%E9%85%8D%E7%BD%AE-Git#客户端基本配置)
+- 參考範本：[前端工程團隊建議規範](https://github.com/104corp/guideline/blob/master/source-repository/git-commit-message-guide-f2e.md)
+
+### Pull Request Template
+
+- [教學文件](https://help.github.com/articles/creating-a-pull-request-template-for-your-repository/)
+- 參考範本：[104-vip-prelogin-f2e](https://github.com/104corp/104-vip-prelogin-f2e/blob/master/.github/PULL_REQUEST_TEMPLATE.md)
+
+### Issue Template
+
+- [教學文件](https://help.github.com/articles/creating-an-issue-template-for-your-repository/)
+- 參考範本：[104-vip-prelogin-f2e](https://github.com/104corp/104-vip-prelogin-f2e/blob/master/.github/ISSUE_TEMPLATE.md)
