@@ -6,6 +6,8 @@
 * 可以人為修改 navigator.userAgent
 * 每個瀏覽器對應的特徵字串不一樣，甚至可能會被誤導
 (但對於版本低瀏覽器如IE6、IE7只支援這種做法)
+* 補充資料
+> http://useragentstring.com/pages/useragentstring.php
 
 ## 單例模式
 
@@ -48,6 +50,8 @@ userAgentMatch(userAgent);
 * 可用瀏覽器為: opera、chrome、ie、firefix、safari
 * 但因JQuery1.8.3版號太舊，有些新瀏覽器判斷方式須做判斷調整(如:edge、opera)
 * 可直接取得目前開啟的瀏覽器(browser)與版本號(version)
+* 參考資料
+> https://developer.mozilla.org/en-US/docs/Web/HTTP/Browser_detection_using_the_user_agent
 
 ## console.log()
 
@@ -63,7 +67,7 @@ console.log('顯示字串', string); // IE8以下不支援
 * 因版本低的瀏覽器(IE6、IE7)能使用的方法不多，所以為了能讓低版本瀏覽器可以執行目前只能先用此做法
 > https://caniuse.com/#search=innerHTML
 
-* 用javascript做html標籤須注意的地方是IE8以下不支援```javascript'<style>...</style>'```
+* 用javascript做html標籤須注意的地方是IE8以下不支援```'<style>...</style>'```
 
 * 目前解法css只能用inline style方式寫入
 
