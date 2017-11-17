@@ -69,12 +69,17 @@ console.log('顯示字串', string); // IE8以下不支援
 
 * 用javascript做html標籤須注意的地方是IE8以下不支援```'<style>...</style>'```
 
-* 目前解法css只能用inline style方式寫入
-
 ```javascript
-var style = '<style>body { background: #eee; }</style>';
+var style = '<style>div { background: #eee; }</style>';
 var html = '<div>我是內容</div>';
 document.body.innerHTML = style + html;
 
 // ie8以下只會顯示html，style會顯示不出來
+```
+
+* 目前解法css只能用inline style方式寫入
+
+```javascript
+var html = '<div style="background: #eee;">我是內容</div>';
+document.body.innerHTML = html;
 ```
