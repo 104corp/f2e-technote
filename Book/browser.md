@@ -83,3 +83,25 @@ document.body.innerHTML = style + html;
 var html = '<div style="background: #eee;">我是內容</div>';
 document.body.innerHTML = html;
 ```
+
+## document.body.innerHTML 生成 HTML 綁定事件
+
+* 舊IE瀏覽器不支援.addEventListener綁定事件方法，要用早期的.attachEvent方法綁定
+
+```javascript
+var closeFunc = function() {
+  document.getElementById('closeDivName').style.display = 'none';
+}
+
+var html = '<span id="closeButton"><img src="close-icon.png" /></span>';
+
+document.body.innerHTML = html;
+
+if(window.attachEvent) {
+  // .attachEvent for IE用，需加on(onclick)
+  document.getElementById('closeButton').attachEvent('onclick', closeFunc);
+} else if(window.addEventListener) {
+  // .addEventListener for 其他瀏覽器用，不需加on(click)
+  document.getElementById('closeButton').addEventListener('click', closeFunc);
+}
+```
